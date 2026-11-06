@@ -1,0 +1,34 @@
+1. C
+2. Ela deve ficar no .env para ser separada do código, diminuindo os riscos de expô-la. Em conjunto, se usa, comumente, o arquivo .gitignore para escondê-la dentro de repositórios git. Se a chave de API ficar exposta, qualquer pessoa pode utilizá-la sem restrições, gastando API calls, e, consequentemente, dinheiro.
+3. B
+4. Arquivo*
+5. a) Porque o modelo sem memória não armazena o histórico de conversas anteriores
+b) def historico_para_envio(historico: list) -> list:
+    if not historico:
+        return historico
+
+    if historico[0].get("role") == "system":
+        system = historico[0]
+        resto = historico[1:]
+        return [system] + resto[-MAX_MENSAGENS:]
+
+    return historico[-MAX_MENSAGENS:]
+6. B
+7. Arquivo*
+8. a)
+Completo:
+import streamlit as st
+
+if "historico" not in st.session_state:
+    st.session_state.historico = novo_historico()
+
+for mensagem in st.session_state.historico:
+    if mensagem["role"] == "system":
+        continue
+    with st.chat_message(mensagem["role"]):
+        st.markdown(mensagem["content"])
+
+if pergunta:
+ st.session_state.historico.append({"role": "user", "content": pergunta})
+
+b) O Streamlit executa todo o script do início ao fim a cada interação do usuário, o que recriaria e esvaziaria uma variável comum como historico = [] a cada rodada. O st.session_state serve justamente para persistir dados na memória entre essas reexecuções, mantendo o estado da sessão ativo para aquele usuário.
